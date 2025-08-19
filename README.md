@@ -1,76 +1,50 @@
-# Fraud Detection using Machine Learning
+project: Fraud Detection
 
-This project implements machine learning techniques to detect fraudulent credit card transactions.  
-The dataset is highly imbalanced, and the goal is to build robust models that can identify fraud with high accuracy while minimizing false positives.  
+overview: |
+  This project focuses on detecting fraudulent transactions in financial datasets
+  using machine learning techniques. It includes data preprocessing, exploratory
+  data analysis (EDA), model training, and evaluation with multiple metrics.
 
----
+installation_and_setup:
+  - step: Clone the repository
+    commands:
+      - git clone https://github.com/poshak2004/fraud_detection.git
+      - cd fraud_detection
 
-## Features
-- Data preprocessing and feature scaling  
-- Handling class imbalance using resampling techniques (SMOTE, undersampling)  
-- Training multiple ML models:
-  - Logistic Regression  
-  - Random Forest  
-  - XGBoost / LightGBM  
-- Model evaluation with precision, recall, F1-score, ROC-AUC  
-- Jupyter notebooks for EDA & experimentation  
-- Modular Python scripts for training and evaluation  
+  - step: Create a virtual environment & activate it
+    commands:
+      - python -m venv venv
+      - source venv/bin/activate   # Mac/Linux
+      - venv\Scripts\activate      # Windows
 
----
+  - step: Install dependencies
+    commands:
+      - pip install -r requirements.txt
 
-## Tech Stack
-- Python 3.9+  
-- NumPy, Pandas → data manipulation  
-- Matplotlib, Seaborn → visualization  
-- Scikit-learn → machine learning models  
-- Imbalanced-learn → handling class imbalance  
-- XGBoost / LightGBM → gradient boosting models  
+  - step: Dataset
+    note: |
+      Place the dataset (creditcard.csv) inside the data/ folder.
+      ⚠️ The dataset is ignored in version control due to its size.
 
----
+usage: |
+  Run EDA and experiments using notebooks in the notebooks/ folder.
 
+  Train models using scripts in src/. Example:
+    python src/train_model.py
 
-## Project Structure
+  Saved models and results will be stored in:
+    - models/
+    - results/
 
-fraud_detection/
-│── data/                # (dataset ignored in git, >100MB excluded)
-│── notebooks/           # Jupyter notebooks with EDA & experiments
-│── src/                 # Python scripts for training & evaluation
-│── models/              # Saved trained models
-│── results/             # Plots, metrics & reports
-│── requirements.txt     # Python dependencies
-│── README.md            # Project documentation
+results:
+  evaluation_metrics:
+    - Precision
+    - Recall
+    - F1-score
+    - ROC-AUC
+  details: |
+    Detailed results and plots are available in the results/ directory.
 
-## Installation & Setup
--Clone the repository:
-
-git clone https://github.com/poshak2004/fraud_detection.git
-cd fraud_detection
-
--Create a virtual environment & activate it:
-
-python -m venv venv
-source venv/bin/activate   # Mac/Linux
-venv\Scripts\activate      # Windows
-
--Install dependencies:
-pip install -r requirements.txt
-
--Place the dataset (creditcard.csv) inside the data/ folder.
-Note: The dataset is ignored in version control due to its size.
-
--Usage
-Run EDA and experiments using notebooks in the notebooks/ folder.
-Train models using scripts in src/. Example:
-python src/train_model.py
-Saved models and results will be stored in models/ and results/.
-
--Results
-Models are evaluated using:
-Precision
-Recall
-F1-score
-ROC-AUC
-Detailed results and plots are available in the results/ directory.
-
--License
-This project is licensed under the MIT License. See LICENSE for details.
+license: |
+  This project is licensed under the MIT License.
+  See the LICENSE file for details.
