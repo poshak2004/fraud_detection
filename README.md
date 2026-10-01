@@ -1,202 +1,64 @@
-# 🛡️ Fraud Detection using Machine Learning
+# Fraud Detection on Imbalanced Transactions
 
-## 📌 Problem Statement
-Financial fraud leads to significant monetary losses every year. The objective of this project is to build a **robust fraud detection system** that accurately identifies fraudulent transactions from historical data while effectively handling **class imbalance** and maximizing **recall**, which is critical in fraud-sensitive applications.
+Credit-card fraud classifier built for **recall on a 0.17% minority class**: stratified split, leakage-safe scaling, SMOTE on the training set only, and a class-balanced Random Forest. Evaluation skips accuracy on purpose.
 
----
+## Results
 
-## 🗂️ Dataset
-- **Source:** Public credit card transaction dataset  
-- **Data Type:** Transaction-level numerical features  
-- **Target Variable:** `Class`  
-  - `0` → Legitimate transaction  
-  - `1` → Fraudulent transaction  
-- **Key Challenge:** Extreme class imbalance (fraud cases are rare)
+Held-out test set: 56,962 transactions (20% stratified split), 98 of them fraud.
 
----
+| Metric | Value |
+|---|---|
+| Precision (fraud) | **0.871** |
+| Recall (fraud) | **0.827** |
+| F1 (fraud) | **0.848** |
+| ROC-AUC | **0.975** |
 
-## 🔍 Exploratory Data Analysis (EDA)
-The following EDA steps were performed:
-- Class distribution analysis to understand imbalance  
-- Feature distribution visualization  
-- Correlation analysis  
-- Outlier inspection  
+|  | Predicted legit | Predicted fraud |
+|---|---|---|
+| **Actual legit** | 56,852 | 12 |
+| **Actual fraud** | 17 | **81** |
 
-### Key Insights
-- Severe class imbalance required specialized handling techniques  
-- Certain features showed strong discriminative power for fraud detection  
-- Accuracy alone is misleading for fraud detection problems  
+It catches 81 of 98 frauds and flags 12 legitimate transactions out of 56,864.
 
----
+<p>
+<img src="results/figures/confusion_matrix.png" width="45%" />
+<img src="results/figures/roc_curve.png" width="45%" />
+</p>
 
-## 🧠 Modeling Approach
+> Accuracy would be 99.95% here, and it would be almost as high for a model that never predicts fraud. That's why the metrics above are all about the minority class.
 
-### 🔹 Data Preprocessing
-- Feature scaling using `StandardScaler`  
-- Stratified train-test split  
-- Techniques to address class imbalance  
+## How it works
 
-### 🔹 Models Implemented
-- Logistic Regression (baseline model)  
-- Random Forest Classifier  
-- Gradient Boosting / XGBoost  
-
-### 🔹 Evaluation Strategy
-- Stratified cross-validation  
-- Threshold tuning to prioritize recall  
-- Model comparison using multiple performance metrics  
-
----
-
-## 📊 Results & Performance
-
-Models were evaluated using **stratified cross-validation** with a strong focus on **recall** and **ROC-AUC**, as missing fraudulent transactions is significantly more costly than false positives.
-
-### 📈 Model Performance Summary
-
-| Model | ROC-AUC | Precision | Recall | F1-Score |
-|------|--------|-----------|--------|----------|
-| Logistic Regression (Baseline) | 0.94 | 0.82 | 0.76 | 0.79 |
-| Random Forest | 0.97 | 0.89 | 0.83 | 0.86 |
-| XGBoost | **0.99** | **0.92** | **0.88** | **0.90** |
-
-> ⚠️ *Metrics shown are representative and should be replaced with final evaluated values from model runs.*
-
----
-
-### 🧮 Evaluation Metrics Used
-- **ROC-AUC** – overall discriminative ability  
-- **Precision** – proportion of predicted frauds that are correct  
-- **Recall** – ability to correctly identify fraudulent transactions  
-- **F1-Score** – balance between precision and recall  
-- **Confusion Matrix** – detailed error analysis  
-
----
-📌 **Final Model Selection:**  
-The final model was selected based on **high recall with acceptable precision**, prioritizing fraud detection over minimizing false positives.
-
----
-
-## 📈 Visualizations
-- ROC Curves  
-- Confusion Matrices  
-- Feature Importance Plots  
-
-(All visualizations are stored in the `results/figures/` directory.)
-
----
-
-## 🚀 Deployment
-
-### 🔹 Streamlit Application
-An interactive Streamlit app allows users to:
-- Input transaction features  
-- Receive real-time fraud probability predictions  
-
-### 🔹 API (Optional Extension)
-The trained model can be served using **FastAPI** for real-time inference in production environments.
-
----
-
-## 📦 Project Structure
-
-```text
-fraud_detection/
-├── data/
-│   ├── raw/
-│   └── processed/
-├── notebooks/
-│   ├── 01_eda.ipynb
-│   └── 02_modeling.ipynb
-├── src/
-│   ├── preprocessing.py
-│   ├── train.py
-│   └── predict.py
-├── models/
-├── results/
-│   ├── metrics.csv
-│   └── figures/
-├── app.py
-├── requirements.txt
-└── README.md
 ```
-## ▶️ How to Run Locally
+creditcard.csv
+  → stratified 80/20 split          (keeps the 0.17% fraud ratio in both sets)
+  → StandardScaler fit on train only (no test leakage)
+  → SMOTE on train only             (test set stays untouched)
+  → RandomForest(n_estimators=200, class_weight="balanced")
+  → precision / recall / F1 / ROC-AUC + confusion matrix + ROC curve
+```
 
-### 1️⃣ Clone the Repository
+| File | Role |
+|---|---|
+| `src/preprocess.py` | Load, stratified split, scaling, SMOTE |
+| `src/train.py` | Train the Random Forest and save `models/fraud_rf.pkl` |
+| `src/evaluate.py` | Metrics → `results/metrics.csv`, plots → `results/figures/` |
+| `main.py` | Runs train + evaluate end to end |
+
+## Run it
+
 ```bash
-git clone https://github.com/poshak2004/fraud_detection.git
-cd fraud_detection
-python -m venv venv
-source venv/bin/activate
 pip install -r requirements.txt
-streamlit run app.py
+
+# Dataset: Kaggle "Credit Card Fraud Detection" (ULB), 284,807 rows
+mkdir -p data
+curl -L -o data/creditcard.csv https://storage.googleapis.com/download.tensorflow.org/data/creditcard.csv
+
+python main.py   # ~2 min on a laptop
 ```
-## 🧪 Tools & Technologies
 
-### 🧠 Programming & Data Handling
-- **Python** – core language for data processing and modeling  
-- **NumPy**, **Pandas**, **SciPy** – numerical computing, data manipulation, and scientific operations  
-- **SQL** – querying and preprocessing structured data  
+## Next steps
 
----
-
-### 🤖 Machine Learning & Modeling
-- **scikit-learn** – preprocessing, modeling, pipelines, and evaluation  
-- **XGBoost / Gradient Boosting** – high-performance ensemble models  
-- **Imbalanced-learn** – handling class imbalance in fraud detection  
-- Feature engineering & feature selection techniques  
-
----
-
-### 📊 Data Analysis & Visualization
-- **Matplotlib** – static visualizations  
-- **Seaborn** – statistical data visualization  
-- **Plotly** – interactive plots for deeper analysis  
-
----
-
-### 📈 Model Evaluation & Experimentation
-- **ROC-AUC**, Precision, Recall, F1-score  
-- Confusion Matrix & Precision–Recall curve analysis  
-- **MLflow** – experiment tracking, model comparison, and reproducibility  
-
----
-
-### 🚀 Deployment & Applications
-- **Streamlit** – interactive web app for model inference  
-- **FastAPI** – REST APIs for real-time prediction services (extension-ready)  
-
----
-
-### 🛠️ Development & Workflow
-- **Git & GitHub** – version control and collaboration  
-- **Jupyter Notebook** – EDA and rapid experimentation  
-- **VS Code** – development environment  
-- Modular, reproducible project structure following ML best practices  
-
----
-
-## 📌 Key Takeaways
-- Fraud detection requires **metric-driven evaluation**, not accuracy alone  
-- Handling **class imbalance** is essential for real-world performance  
-- Recall-focused optimization helps minimize costly false negatives  
-- Well-structured pipelines improve reproducibility and deployment readiness  
-
----
-
-## 🔮 Future Improvements
-- Hyperparameter optimization using **Optuna**  
-- Advanced resampling techniques (SMOTE variants)  
-- Model explainability using **SHAP** and feature importance analysis  
-- Model monitoring and data drift detection  
-- Dockerized deployment for production environments  
-
----
-
-## 📎 Notes
-This project is designed to reflect **real-world data science workflows**, emphasizing:
-- End-to-end ownership  
-- Strong evaluation and validation practices  
-- Practical, deployment-ready machine learning solutions  
-
-
+- Tune the decision threshold on a precision-recall curve instead of using the default 0.5
+- Compare against a gradient-boosted model and plain logistic regression
+- Use stratified k-fold CV in place of a single split

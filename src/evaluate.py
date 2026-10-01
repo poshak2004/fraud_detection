@@ -28,7 +28,7 @@ def evaluate_model():
 
     # Load data
     df = load_data("data/creditcard.csv")
-    X_train, X_test, y_train, y_test = preprocess_data(df)
+    _, X_test, _, y_test, _ = preprocess_data(df)
 
     # Load trained model
     model = joblib.load("models/fraud_rf.pkl")

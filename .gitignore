@@ -7,3 +7,6 @@ __pycache__/
 data/creditcard.csv
 data/creditcard.csv
 *.csv
+!results/metrics.csv
+models/
+data/
